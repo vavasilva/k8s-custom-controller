@@ -25,7 +25,7 @@ func (t *TestHandler) Init() error {
 // ObjectCreated is called when an object is created
 func (t *TestHandler) ObjectCreated(obj interface{}) {
 	log.Info("TestHandler.ObjectCreated")
-	// assert the type to a Pod object to pull out relevant data
+	// assert the type to a Ingress object to pull out relevant data
 	ingress := obj.(*api_extensions_v1beta1.Ingress)
 	log.Infof("    ResourceVersion: %s", ingress.ObjectMeta.ResourceVersion)
 	log.Infof("    Name: %s", ingress.ObjectMeta.Name)

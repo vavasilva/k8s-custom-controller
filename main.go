@@ -20,8 +20,7 @@ import (
 // retrieve the Kubernetes cluster client from outside of the cluster
 func getKubernetesClient() kubernetes.Interface {
 	// construct the path to resolve to `~/.kube/config`
-	//kubeConfigPath := os.Getenv("HOME") + "/keybase/team/cloud104dev/k8s-api/platform-7c9b08c4"
-	kubeConfigPath := "/keybase/team/cloud104dev/k8s-api/platform-7c9b08c4"
+	kubeConfigPath := os.Getenv("HOME") + "/.kube/config"
 
 	// create the config from the path
 	config, err := clientcmd.BuildConfigFromFlags("", kubeConfigPath)
@@ -45,24 +44,22 @@ func main() {
 	client := getKubernetesClient()
 
 	// create the informer so that we can not only list resources
-	// but also watch them for all pods in the default namespace
+	// but also watch them for all ingress in the default namespace
 	informer := cache.NewSharedIndexInformer(
 		// the ListWatch contains two different functions that our
 		// informer requires: ListFunc to take care of listing and watching
 		// the resources we want to handle
 		&cache.ListWatch{
 			ListFunc: func(options meta_v1.ListOptions) (runtime.Object, error) {
-				// list all of the pods (core resource) in the deafult namespace
+				// list all of the ingress (core resource) in the deafult namespace
 				return client.ExtensionsV1beta1().Ingresses(meta_v1.NamespaceAll).List(options)
-				//return client.CoreV1().Pods(meta_v1.NamespaceDefault).List(options)
 			},
 			WatchFunc: func(options meta_v1.ListOptions) (watch.Interface, error) {
-				// watch all of the pods (core resource) in the default namespace
+				// watch all of the ingress (core resource) in the default namespace
 				return client.ExtensionsV1beta1().Ingresses(meta_v1.NamespaceAll).Watch(options)
-				//return client.CoreV1().Pods(meta_v1.NamespaceDefault).Watch(options)
 			},
 		},
-		&api_extensions_v1beta1.Ingress{}, // the target type (Pod)
+		&api_extensions_v1beta1.Ingress{}, // the target type (Ingress)
 		0,                                 // no resync (period of 0)
 		cache.Indexers{},
 	)
